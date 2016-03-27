@@ -36,8 +36,10 @@ import lsst.utils.tests as utilsTests
 
 OutputName = None  # Specify a name (as a string) to save the output repository
 
+
 class ProcessCcdTestCase(utilsTests.TestCase):
     """Tests to run processCcd or tests with processed data"""
+
     def setUp(self):
         try:
             self.datadir = getPackageDir("testdata_decam")
@@ -101,6 +103,7 @@ def suite():
     suites += unittest.makeSuite(ProcessCcdTestCase)
     suites += unittest.makeSuite(utilsTests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests"""

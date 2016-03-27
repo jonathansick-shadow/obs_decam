@@ -23,6 +23,7 @@
 import lsst.pipe.base as pipeBase
 import lsst.pex.config as pexConfig
 
+
 class DecamNullIsrConfig(pexConfig.Config):
     doWrite = pexConfig.Field(
         dtype = bool,
@@ -35,18 +36,19 @@ class DecamNullIsrConfig(pexConfig.Config):
         default = "instcal",
     )
 
-## \addtogroup LSST_task_documentation
-## \{
-## \page DecamNullIsrTask
-## \ref DecamNullIsrTask_ "DecamNullIsrTask"
-## \copybrief DecamNullIsrTask
-## \}
+# \addtogroup LSST_task_documentation
+# \{
+# \page DecamNullIsrTask
+# \ref DecamNullIsrTask_ "DecamNullIsrTask"
+# \copybrief DecamNullIsrTask
+# \}
+
 
 class DecamNullIsrTask(pipeBase.Task):
     """!Load an "instcal" exposure as a post-ISR CCD exposure
 
     @anchor DecamNullIsrTask_
-    
+
     @section pipe_tasks_decamNullIsr_Contents  Contents
 
      - @ref pipe_tasks_decamNullIsr_Purpose

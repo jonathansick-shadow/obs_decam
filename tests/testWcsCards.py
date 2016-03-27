@@ -34,6 +34,7 @@ import lsst.pex.exceptions as pexExcept
 
 class WcsCardsTestCase(unittest.TestCase):
     """Test wcs keywords in the metadata"""
+
     def setUp(self):
         try:
             datadir = getPackageDir("testdata_decam")
@@ -69,6 +70,7 @@ def suite():
     suites += unittest.makeSuite(WcsCardsTestCase)
     suites += unittest.makeSuite(utilsTests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests"""

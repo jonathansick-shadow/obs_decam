@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
-# 
+#
 # LSST Data Management System
 # Copyright 2014 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -10,14 +10,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 from __future__ import absolute_import
@@ -32,24 +32,25 @@ import lsst.afw.table as afwTable
 from lsst.afw.cameraGeom import (DetectorConfig, CameraConfig, PUPIL, FOCAL_PLANE, PIXELS)
 from lsst.obs.decam import DecamMapper
 
+
 def makeAmpTables(segmentsFile):
     """
     Read the segments file from a PhoSim release and produce the appropriate AmpInfo
     @param segmentsFile -- String indicating where the file is located
     """
     returnDict = {}
-    #TODO currently there is no linearity provided, but we should identify
-    #how to get this information.
-    linearityCoeffs = (0.,1.,0.,0.)
+    # TODO currently there is no linearity provided, but we should identify
+    # how to get this information.
+    linearityCoeffs = (0., 1., 0., 0.)
     linearityType = "Polynomial"
-    readoutMap = {'LL':afwTable.LL, 'LR':afwTable.LR, 'UR':afwTable.UR, 'UL':afwTable.UL}
-    detectorName = [] # set to a value that is an invalid dict key, to catch bugs
+    readoutMap = {'LL': afwTable.LL, 'LR': afwTable.LR, 'UR': afwTable.UR, 'UL': afwTable.UL}
+    detectorName = []  # set to a value that is an invalid dict key, to catch bugs
     with open(segmentsFile) as fh:
         fh.readline()
         for l in fh:
             els = l.rstrip().split()
             detectorName = els[1]
-            #skip focus and guiding for now:
+            # skip focus and guiding for now:
             if detectorName[0] in ('F', 'G'):
                 continue
             if not returnDict.has_key(detectorName):
@@ -65,8 +66,8 @@ def makeAmpTables(segmentsFile):
             ndatax = int(els[3])
             ndatay = int(els[4])
 
-            flipx = False 
-            flipy = False 
+            flipx = False
+            flipy = False
 
             if detectorName.startswith("S") and name == "A":
                 readCorner = readoutMap['UR']
@@ -124,8 +125,8 @@ def makeAmpTables(segmentsFile):
             print rawVerticalOverscanBBox
             print dataBBox
             print rawBBox
-            #Set the elements of the record for this amp
-            record.setBBox(dataBBox) # This is the box for the amp in the assembled frame
+            # Set the elements of the record for this amp
+            record.setBBox(dataBBox)  # This is the box for the amp in the assembled frame
             record.setName(name)
             record.setReadoutCorner(readCorner)
             record.setGain(gain)
@@ -138,7 +139,7 @@ def makeAmpTables(segmentsFile):
             record.setRawFlipY(flipy)
             record.setRawBBox(rawBBox)
             # I believe that xy offset is not needed if the raw data are pre-assembled
-            record.setRawXYOffset(afwGeom.Extent2I(0,0))
+            record.setRawXYOffset(afwGeom.Extent2I(0, 0))
             """
             if readCorner is afwTable.LL:
                 record.setRawXYOffset(afwGeom.Extent2I(xoff + prescan + hoverscan, yoff))
@@ -157,6 +158,7 @@ def makeAmpTables(segmentsFile):
             record.setRawPrescanBBox(afwGeom.Box2I())
     return returnDict
 
+
 def makeDetectorConfigs(detectorLayoutFile):
     """
     Create the detector configs to use in building the Camera
@@ -166,14 +168,14 @@ def makeDetectorConfigs(detectorLayoutFile):
     detectorConfigs = []
     xsize = 2048
     ysize = 4096
-    #Only do Science detectors right now.
-    #There is an overall 0.05 deg rotation to the entire focal plane that I'm ignoring here.
+    # Only do Science detectors right now.
+    # There is an overall 0.05 deg rotation to the entire focal plane that I'm ignoring here.
     with open(detectorLayoutFile) as fh:
         fh.readline()
         for l in fh:
             els = l.rstrip().split()
             detectorName = els[1]
-            #skip focus and guiding for now:
+            # skip focus and guiding for now:
             if detectorName[0] in ('F', 'G'):
                 continue
 
@@ -188,8 +190,8 @@ def makeDetectorConfigs(detectorLayoutFile):
             detConfig.serial = els[0]
 
             # Convert from microns to mm.
-            detConfig.offset_x = (float(els[2]) + float(els[3]))/2. 
-            detConfig.offset_y = (float(els[4]) + float(els[5]))/2. 
+            detConfig.offset_x = (float(els[2]) + float(els[3]))/2.
+            detConfig.offset_y = (float(els[4]) + float(els[5]))/2.
 
             detConfig.refpos_x = (xsize - 1.)/2.
             detConfig.refpos_y = (ysize - 1.)/2.
@@ -219,26 +221,26 @@ if __name__ == "__main__":
     parser.add_argument("DetectorLayoutFile", help="Path to detector layout file")
     parser.add_argument("SegmentsFile", help="Path to amp segments file")
     parser.add_argument("OutputDir",
-        help = "Path to dump configs and AmpInfo Tables; defaults to %r" % (defaultOutDir,),
-        nargs = "?",
-        default = defaultOutDir,
-    )
+                        help = "Path to dump configs and AmpInfo Tables; defaults to %r" % (defaultOutDir,),
+                        nargs = "?",
+                        default = defaultOutDir,
+                        )
     parser.add_argument("--clobber", action="store_true", dest="clobber", default=False,
-        help=("remove and re-create the output directory if it already exists?"))
+                        help=("remove and re-create the output directory if it already exists?"))
     args = parser.parse_args()
     ampTableDict = makeAmpTables(args.SegmentsFile)
     detectorConfigList = makeDetectorConfigs(args.DetectorLayoutFile)
 
-    #Build the camera config.
-    camConfig = CameraConfig() 
-    camConfig.detectorList = dict([(i,detectorConfigList[i]) for i in xrange(len(detectorConfigList))])
+    # Build the camera config.
+    camConfig = CameraConfig()
+    camConfig.detectorList = dict([(i, detectorConfigList[i]) for i in xrange(len(detectorConfigList))])
     camConfig.name = 'DECAM'
-    #From DECam calibration doc
+    # From DECam calibration doc
     camConfig.plateScale = 17.575
     pScaleRad = afwGeom.arcsecToRad(camConfig.plateScale)
     tConfig = afwGeom.TransformConfig()
     tConfig.transform.name = 'radial'
-    nomWavelen =  0.625 #nominal wavelen in microns
+    nomWavelen = 0.625  # nominal wavelen in microns
     coeff0 = 0
     coeff1 = 1 - 2.178e-4 - 2.329e-4/nomWavelen + 4.255e-5/nomWavelen**2
     coeff2 = 0
@@ -247,7 +249,7 @@ if __name__ == "__main__":
                                        pScaleRad*coeff3]
     tmc = afwGeom.TransformMapConfig()
     tmc.nativeSys = FOCAL_PLANE.getSysName()
-    tmc.transforms = {PUPIL.getSysName():tConfig}
+    tmc.transforms = {PUPIL.getSysName(): tConfig}
     camConfig.transformDict = tmc
 
     def makeDir(dirPath, doClobber=False):
